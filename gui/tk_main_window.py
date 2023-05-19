@@ -2,7 +2,6 @@ import tkinter as tk
 from gui.tk_constants import *
 from gui.tk_display_lbl_frame import DisplayLblFrame
 from services.sense_services import get_current_measurement
-from sense_emu import SenseHat
 
 class TkMainWindow(tk.Tk):
     def __init__(self):
@@ -36,7 +35,7 @@ class TkMainWindow(tk.Tk):
 
         self.chk_measure_humidity = tk.Checkbutton(
             self,
-            text='Mjerenje vlaÂžznosti',
+            text='Mjerenje vlažnosti',
             font=("Arial", 12),
             variable=self.chk_measure_humidity_var
         )
@@ -59,19 +58,19 @@ class TkMainWindow(tk.Tk):
                                       padx=20, pady=20,
                                       sticky='ew', ipadx=20, ipady=20)
         self.lbl_display_results.config(text='Prikaz mjerenja sa senzora')
+
     def btn_refresh_clicked(self):
-        sense = SenseHat()
+        current_measurement = get_current_measurement()
 
         measurements = {
-            "Temperatura": (self.chk_measure_tmp_var, sense.get_temperature, "Â°C"),
-            "Tlak": (self.chk_measure_pressure_var, sense.get_pressure, "hPa"),
-            "Vlaznost": (self.chk_measure_humidity_var, sense.get_humidity, "%")
+            "Temperatura": (self.chk_measure_tmp_var, current_measurement.air_temperature, "°C"),
+            "Tlak": (self.chk_measure_pressure_var, current_measurement.air_pressure, "hPa"),
+            "Vlaznost": (self.chk_measure_humidity_var, current_measurement.air_humidity, "%")
         }
 
         display_text = ""
-        for measurement, (var, func, unit) in measurements.items():
+        for measurement, (var, value, unit) in measurements.items():
             if var.get() == 1:
-                value = func()
                 display_text += f"{measurement}: {value:.2f} {unit}\n"
 
         self.lbl_display_results.lbl_display_tmp_var.set("")
